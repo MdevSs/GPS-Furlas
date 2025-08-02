@@ -4,16 +4,19 @@ import * as Location from 'expo-location';
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import historic from "../dados/historic";
 export default function Map() {
     const [location, setLocation] = useState({});
     const [url, setUrl] = useState('')
-
+    console.log(historic)
     const getLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync()
         if ( status !== 'granted') return;
         
         let loc = await Location.getCurrentPositionAsync();
         setLocation(loc.coords);
+        const today = new Date();
+        historic.push([location.latitude, location.longitude]);
     } 
     
     console.log('mapa')
