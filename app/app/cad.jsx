@@ -1,7 +1,51 @@
 import { AntDesign } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Cadastro() {
+
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const Cadastrar = async (e) => {
+      // console.log(login);
+      // console.log(password);
+
+      const res = await fetch('http://192.168.15.157/api.php', {
+        "method": "POST",
+        "body": JSON.stringify({
+          "type": 'cadastro',
+          "login": login,
+          "password": password
+          
+        })
+      })
+      .then( resposta => {
+        return resposta.json()
+      })
+      .then( json => {
+        console.log(json);
+
+        if(json.status == "success"){
+          router.push('/map')
+        }
+        
+      })
+      .catch(e => {
+      console.log(e)
+      });
+      
+
+  } 
+
+  const toLogin = async (e) => {
+    router.push('/login');
+  }
+    // console.log(response.status)
+    // console.log('kkk')
+
   return (
     
     <View
@@ -11,13 +55,13 @@ export default function Cadastro() {
         <AntDesign name="enviroment" style={{fontSize: 60, width: '100%', textAlign: 'center',}}/>
         <Text style={styles.title}> Cadastro </Text>
         <View style={styles.inputcont}>
-          <TextInput placeholder="Cadastro" style={styles.input}/>
+          <TextInput placeholder="Cadastro" style={styles.input} onChangeText={(e)=>setLogin(e)}/>
         </View>
         <View style={styles.inputcont}>
-          <TextInput placeholder="Password" style={styles.input}/>
+          <TextInput placeholder="Password" style={styles.input} onChangeText={(e)=>setPassword(e)}/>
         </View>
-        <Text style={styles.span}>Já tem uma conta? Então Faça o Login aqui.</Text>
-        <Pressable style={styles.btn}> 
+        <Text style={styles.span} onPress={toLogin} >Já tem uma conta? Então Faça o Login aqui.</Text>
+        <Pressable style={styles.btn} onPress={Cadastrar}> 
           <Text style={styles.btnText}>Cadastrar</Text>
         </Pressable>
       </View>
@@ -81,4 +125,4 @@ const styles = StyleSheet.create({
       alignSelf: 'center',
       textAlign: 'right'
     }
-});
+})
