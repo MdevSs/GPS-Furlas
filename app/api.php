@@ -4,7 +4,7 @@
 // Permitir requisições de origem cruzada
 header("Access-Control-Allow-Origin: http://localhost:8081");
 // ou substitua * pelo domínio exato se quiser restringir
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PATCH, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Verifica se a requisição é do
     $input = json_decode(file_get_contents('php://input'), true);// Lê o conteúdo JSON da requisição e converte para um array associativo
     // var_dump($input);
     if(!$input) { // Se o JSON não for válido
-        echo json_encode(["statusf" => "error", "message" => "Invalid JSON data"]); // Retorna um erro informando que o JSON é inválido
+        echo json_encode(["status" => "error", "message" => "Invalid JSON data"]); // Retorna um erro informando que o JSON é inválido
         exit; // Finaliza a execução
     }
     if($input["login"] == "") {
@@ -88,27 +88,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Verifica se a requisição é do
 
     $type = $input['type'];
     if($type == 'login'){
-        $oQuery = "SELECT login FROM cadastro WHERE login='". $input['login'] ."' AND password='". $input['password'] ."';";
+        $oQuery = "SELECT id, login FROM cadastro WHERE login='". $input['login'] ."' AND password='". $input['password'] ."';";
         // echo("SELECT login FROM cadastro WHERE login='". $input['login'] ."' AND password='". $input['password'] ."';");
         global $con;
         
         $res = $con -> query($oQuery);
+        $data = $res->fetch_all(MYSQLI_ASSOC);
         // $res
         // var_dump($res);
-        if($res->num_rows == 1)
+        if($res->num_rows == 1){
             echo json_encode([
-                            "message" => "Logado com sucesso",
-                            "status" => "success",
-                            "data" => true
-                            ]
-            );
-        else
+                "message" => "Logado com sucesso",
+                "status" => "success",
+                "data" => $data,
+            ]);
+        } 
+        else 
+            {
             echo json_encode([
                             "message" => "Credenciais incorretas",
                             "status" => "error",
                             "data" => false
                             ]
             );
+        }
     }else if($type == 'cadastro'){
         $oQuery = "INSERT INTO `cadastro` (`login`, `password`) VALUES ('". $input["login"] ."', '". $input["password"] ."');";
     
@@ -127,9 +130,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Verifica se a requisição é do
         echo json_encode($response); // Codifica a resposta em JSON e envia para o cliente
     }
 
+    
+
     // Extrair valores da entrada JSON
     
     exit; // Finaliza a execução
+}
+
+if($_SERVER['REQUEST_METHOD'] === "PATCH") {
+    $input = json_decode(file_get_contents("php://input"), true);
+    if(!$input){
+        echo json_encode(["status" => "error", "message" => "sem input"]); // Retorna um erro informando que o JSON é inválido
+        exit; 
+    }
+    $fetch = $input['fetch'];
+    // var_dump($fetch);
+    if($fetch['login'] === ""){
+        echo json_encode(["status" => "error", "message" => "sem id"]); // Retorna um erro informando que o JSON é inválido
+        exit; 
+    }
+
+    $cSQL = "UPDATE cadastro SET `coordinates` = '". $fetch['data'] ."' WHERE login = '". $fetch['login'] ."'";
+
+    global $con;
+
+    $res = $con->query($cSQL);
+
+    $response = [
+            "message" => "UP TO DATE", // Mensagem de sucesso
+            "status" => "success", // Status da resposta
+        ];
+        echo json_encode($response);
+
+    var_dump($res);
+
+    exit;
 }
 
 // Se o método da requisição não for permitido, retornar erro
