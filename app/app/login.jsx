@@ -1,4 +1,5 @@
 import { AntDesign } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -6,8 +7,9 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 export default function Login() {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+    // const strg = useAsyncStorage("_LOGIN_")
     const router = useRouter();
-  
+
     const Logar = async (e) => {
         // console.log(login);
         // console.log(password);
@@ -26,9 +28,10 @@ export default function Login() {
           return resposta.json()
         })
         .then( json => {
-          console.log(json);
-  
-          if(json.data == true){
+          console.log(json.data[0].login);
+          
+          if(json.status == "success"){
+            AsyncStorage.setItem("_LOGIN_",json.data[0].login)
             router.push('/map')
           }
           
@@ -39,6 +42,11 @@ export default function Login() {
         
   
     } 
+
+    const toCad = () => {
+      router.replace('/cad')
+    }
+
   return (
     
     <View
@@ -53,7 +61,7 @@ export default function Login() {
         <View style={styles.inputcont}>
           <TextInput placeholder="Password" style={styles.input} onChangeText={(e) => setPassword(e)}/>
         </View>
-        <Text style={styles.span}>Não tem uma conta? Faça o seu Cadastro aqui.</Text>
+        <Text style={styles.span} onPress={toCad}>Não tem uma conta? Faça o seu Cadastro aqui.</Text>
         <Pressable style={styles.btn} onPress={Logar}> 
           <Text style={styles.btnText}>Login</Text>
         </Pressable>

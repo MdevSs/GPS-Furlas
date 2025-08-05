@@ -9,9 +9,9 @@ export default function Index() {
   const toCad = () => {
     router.push('/cad')
   }
-  const toMap = () => {
-    router.push('/map')
-  }
+  // const toMap = () => {
+  //   router.push('/map')
+  // }
   return (
     <View
       style={styles.main}
@@ -24,9 +24,9 @@ export default function Index() {
         <Text style={{...styles.textPress, color: '#FAFAFA'}}>LOGIN</Text>
       </Pressable>
       
-      <Pressable style={styles.Press} onPress={toMap}>
+      {/* <Pressable style={styles.Press} onPress={toMap}>
         <Text style={styles.textPress}>Mapa (Debugg)</Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }

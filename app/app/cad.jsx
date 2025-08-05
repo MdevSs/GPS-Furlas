@@ -2,7 +2,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Cadastro() {
 
   const [login, setLogin] = useState("");
@@ -29,6 +29,7 @@ export default function Cadastro() {
         console.log(json);
 
         if(json.status == "success"){
+          AsyncStorage.setItem("_LOGIN_", login)
           router.push('/map')
         }
         
@@ -41,7 +42,8 @@ export default function Cadastro() {
   } 
 
   const toLogin = async (e) => {
-    router.push('/login');
+    router.replace('/login');
+    
   }
     // console.log(response.status)
     // console.log('kkk')
